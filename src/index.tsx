@@ -1,7 +1,6 @@
 import { Elysia } from 'elysia'
 import { html } from '@elysiajs/html'
-import staticPlugin from '@elysiajs/static';
-
+import { file } from 'bun';
 
 export const BaseHtml = ({ children }: { children: undefined | {} }) => (
     <html lang="en">
@@ -41,6 +40,10 @@ export const Navbar = () => (
 )
 
 
+
+
+
+
 new Elysia()
     .get('/favicon.ico', () => Bun.file('public/favicon.ico'))
     .use(html())
@@ -52,13 +55,14 @@ new Elysia()
                     name="login"
                     placeholder="Login"
                     aria-label="Login"
-                    autocomplete="username" />
+                    autocomplete="username"
+                />
                 <input
                     type="password"
                     name="password"
                     placeholder="Password"
                     aria-label="Password"
-                    autocomplete="current-password" />
+                />
                 <button type="submit">Log in</button>
             </fieldset>
         </BaseHtml>
