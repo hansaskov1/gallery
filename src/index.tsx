@@ -8,10 +8,7 @@ export const BaseHtml = ({ children }: { children: undefined | {} }) => (
         <head>
             <meta charset='utf-8' />
             <meta name="color-scheme" content="light dark" />
-            <link
-                rel="stylesheet"
-                href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.slate.min.css"
-            />
+            <link rel="stylesheet" href="public/css/pico.slate.min.css" />
             <title>Hello World</title>
         </head>
         <body>
@@ -52,10 +49,13 @@ new Elysia()
             <BaseHtml>
 
                 <div class="grid">
-                    {photoConfigs.map(({fileName}) => (
-                        <img src={fileName} ></img>
+                    {photoConfigs.map(({ fileName }) => (
+                        <>
+                            <img src={fileName} ></img>
+                        </>
+
                     ))}
-                    
+
                 </div>
 
                 <fieldset class="grid">
