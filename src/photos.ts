@@ -30,13 +30,13 @@ async function readPhotoConfig(filePath: string) {
     const file = Bun.file(filePath);
     const contents = await file.json();
     const photoConfig = parsePhotoConfig(contents)
-    photoConfig.fileName = filePath
+    photoConfig.fileName = filePath.replace(".json", ".jpg")
     return photoConfig
 
 }
 
 export async function readPhotosFromPublicDirectory(directory = "./public/photos/") {
-    
+
     const files = await readdir(directory, { recursive: true });
 
     const photoConfigs = await Promise.all(

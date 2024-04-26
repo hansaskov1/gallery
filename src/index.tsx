@@ -1,6 +1,7 @@
 import { Elysia } from 'elysia'
 import { html } from '@elysiajs/html'
-import { file } from 'bun';
+import { staticPlugin } from '@elysiajs/static'
+import { readPhotosFromPublicDirectory } from './photos';
 
 export const BaseHtml = ({ children }: { children: undefined | {} }) => (
     <html lang="en">
@@ -40,32 +41,41 @@ export const Navbar = () => (
 )
 
 
-
-
-
-
 new Elysia()
-    .get('/favicon.ico', () => Bun.file('public/favicon.ico'))
+    .use(staticPlugin())
     .use(html())
-    .get('/', () => (
-        <BaseHtml>
-            <fieldset class="grid">
-                <input
-                    type="text"
-                    name="login"
-                    placeholder="Login"
-                    aria-label="Login"
-                    autocomplete="username"
-                />
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    aria-label="Password"
-                />
-                <button type="submit">Log in</button>
-            </fieldset>
-        </BaseHtml>
-    ))
+    .get('/favicon.ico', () => Bun.file('public/favicon.ico'))
+    .get('/', async () => {
+
+        const photoConfigs = await readPhotosFromPublicDirectory()
+        return (
+            <BaseHtml>
+
+                <div class="grid">
+                    {photoConfigs.map(({fileName}) => (
+                        <img src={fileName} ></img>
+                    ))}
+                    
+                </div>
+
+                <fieldset class="grid">
+                    <input
+                        type="text"
+                        name="login"
+                        placeholder="Login"
+                        aria-label="Login"
+                        autocomplete="username"
+                    />
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        aria-label="Password"
+                    />
+                    <button type="submit">Log in</button>
+                </fieldset>
+            </BaseHtml>
+        )
+    })
     .listen(3000)
 
