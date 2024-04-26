@@ -1,7 +1,6 @@
 import { readdir } from "node:fs/promises";
 import path from 'node:path';
 
-
 interface PhotoConfig {
     fileName: string,
     createDate: string,
@@ -30,26 +29,23 @@ function parsePhotoConfig(contents: any) {
 async function readPhotoConfig(filePath: string) {
     const file = Bun.file(filePath);
     const contents = await file.json();
+    const photoConfig = parsePhotoConfig(contents)
+    photoConfig.fileName = filePath
+    return photoConfig
+
 }
 
-
-export async function readPhotosFromPublicDirectory() {
-
-    const directory = "./public/photos/"
-
-    const files = await readdir(directory, { recursive: true });
-    const jsonFiles = files
-        .filter(filePath => filePath.endsWith('.json'))
-        .map(filepath => path.join("/", directory, filepath))
-        .map(async filePath => readPhotoConfig(filePath))
-        .map(content => parsePhotoConfig(content))
-
+export async function readPhotosFromPublicDirectory(directory = "./public/photos/") {
     
+    const files = await readdir(directory, { recursive: true });
 
-    console.log(jsonFiles)
+    const photoConfigs = await Promise.all(
+        files
+            .filter(filePath => filePath.endsWith('.json'))
+            .map(filepath => path.join(directory, filepath))
+            .map(filePath => readPhotoConfig(filePath))
+    );
 
-
-    return jsonFiles
+    return photoConfigs;
 }
 
-readPhotosFromPublicDirectory()
