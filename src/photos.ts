@@ -1,7 +1,7 @@
 import { readdir } from "node:fs/promises";
 import path from 'node:path';
 
-interface PhotoConfig {
+export interface PhotoConfig {
     fileName: string,
     createDate: string,
     createSecondsEpoc: number,

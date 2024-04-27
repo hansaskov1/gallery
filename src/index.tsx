@@ -1,7 +1,7 @@
 import { Elysia } from 'elysia'
 import { html } from '@elysiajs/html'
 import { staticPlugin } from '@elysiajs/static'
-import { readPhotosFromPublicDirectory } from './photos';
+import { PhotoConfig, readPhotosFromPublicDirectory } from './photos';
 
 export const BaseHtml = ({ children }: { children: undefined | {} }) => (
     <html lang="en">
@@ -9,6 +9,7 @@ export const BaseHtml = ({ children }: { children: undefined | {} }) => (
             <meta charset='utf-8' />
             <meta name="color-scheme" content="light dark" />
             <link rel="stylesheet" href="public/css/pico.slate.min.css" />
+            <link rel="stylesheet" href="public/css/main.css" />
             <title>Hello World</title>
         </head>
         <body>
@@ -37,6 +38,69 @@ export const Navbar = () => (
     </nav>
 )
 
+export const PhotoConfigTable = ({ config }: { config: PhotoConfig }) => {
+
+    const [date, time] = config.createDate.split(" ")
+
+    return <>
+        <table>
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td>Date</td>
+                <td>{date}</td>
+            </tr>
+            <tr>
+                <td>Time</td>
+                <td>{time}</td>
+            </tr>
+            <tr>
+                <td>Time since epoch</td>
+                <td>{config.createSecondsEpoc}</td>
+            </tr>
+            <tr>
+                <td>Exposure time</td>
+                <td>{config.exposureTime}</td>
+            </tr>
+            <tr>
+                <td>Distance to subject</td>
+                <td>{config.subjectDistance}</td>
+            </tr>
+            <tr>
+                <td>ISO</td>
+                <td>{config.ISO}</td>
+            </tr>
+            <tr>
+                <td>Trigger method</td>
+                <td>{config.trigger}</td>
+            </tr>
+        </table>
+    </>
+}
+
+export const Photo = ({ config }: { config: PhotoConfig }) => {
+    return (
+        <>
+            <img src={config.fileName} onclick="this.nextElementSibling.showModal()" />
+            <dialog>
+                <article>
+                    <header>
+                        <button aria-label="Close" rel="prev" onclick="this.closest('dialog').close()"></button>
+                        <p>
+                            <strong>Picture</strong>
+                        </p>
+                    </header>
+                    <PhotoConfigTable config={config} />
+                </article>
+            </dialog>
+
+
+        </>
+    );
+};
+
 
 new Elysia()
     .use(staticPlugin())
@@ -48,32 +112,14 @@ new Elysia()
         return (
             <BaseHtml>
 
-                <div class="grid">
-                    {photoConfigs.map(({ fileName }) => (
+
+                <div class="grid-fluid">
+                    {photoConfigs.map((config) => (
                         <>
-                            <img src={fileName} ></img>
+                            <Photo config={config} />
                         </>
-
                     ))}
-
                 </div>
-
-                <fieldset class="grid">
-                    <input
-                        type="text"
-                        name="login"
-                        placeholder="Login"
-                        aria-label="Login"
-                        autocomplete="username"
-                    />
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        aria-label="Password"
-                    />
-                    <button type="submit">Log in</button>
-                </fieldset>
             </BaseHtml>
         )
     })
