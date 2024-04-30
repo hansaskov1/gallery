@@ -26,6 +26,18 @@ function parsePhotoConfig(contents: any) {
     return photoConfig
 } 
 
+export const groupPhotoConfigsByDate = (photoConfigs: PhotoConfig[]) => {
+    return photoConfigs.reduce((groups, config) => {
+        const [date] = config.createDate.split(" ");
+        if (!groups[date]) {
+            groups[date] = [];
+        }
+        groups[date].push(config);
+        return groups;
+    }, {} as Record<string, PhotoConfig[]>);
+};
+
+
 async function readPhotoConfig(filePath: string) {
     const file = Bun.file(filePath);
     const contents = await file.json();
@@ -45,6 +57,9 @@ export async function readPhotosFromPublicDirectory(directory = "./public/photos
             .map(filepath => path.join(directory, filepath))
             .map(filePath => readPhotoConfig(filePath))
     );
+
+    // Sort images to show the newest first.
+    photoConfigs.sort((a, b) => b.createSecondsEpoc - a.createSecondsEpoc)
 
     return photoConfigs;
 }

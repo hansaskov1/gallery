@@ -1,7 +1,7 @@
 import { Elysia } from 'elysia'
 import { html } from '@elysiajs/html'
 import { staticPlugin } from '@elysiajs/static'
-import { PhotoConfig, readPhotosFromPublicDirectory } from './photos';
+import { PhotoConfig, groupPhotoConfigsByDate, readPhotosFromPublicDirectory } from './photos';
 
 export const BaseHtml = ({ children }: { children: undefined | {} }) => (
     <html lang="en">
@@ -23,17 +23,15 @@ export const BaseHtml = ({ children }: { children: undefined | {} }) => (
     </html>
 );
 
-
-
 export const Navbar = () => (
     <nav class="container-fluid">
         <ul>
-            <li><strong>Acme Corp</strong></li>
+            <li><strong>Drone Corp</strong></li>
         </ul>
         <ul>
             <li><a href="#" class="contrast">About</a></li>
             <li><a href="#" class="contrast">Services</a></li>
-            <li><a href="#" class="contrast">Products</a></li>
+            <li><a href="/" class="contrast">Photos</a></li>
         </ul>
     </nav>
 )
@@ -44,10 +42,6 @@ export const PhotoConfigTable = ({ config }: { config: PhotoConfig }) => {
 
     return <>
         <table>
-            <tr>
-                <th>Key</th>
-                <th>Value</th>
-            </tr>
             <tr>
                 <td>Date</td>
                 <td>{date}</td>
@@ -95,33 +89,39 @@ export const Photo = ({ config }: { config: PhotoConfig }) => {
                     <PhotoConfigTable config={config} />
                 </article>
             </dialog>
-
-
         </>
     );
 };
-
 
 new Elysia()
     .use(staticPlugin())
     .use(html())
     .get('/favicon.ico', () => Bun.file('public/favicon.ico'))
     .get('/', async () => {
-
-        const photoConfigs = await readPhotosFromPublicDirectory()
+        const photoConfigs = await readPhotosFromPublicDirectory();
+        const groupedPhotoConfigs = groupPhotoConfigsByDate(photoConfigs);
         return (
             <BaseHtml>
+                {Object.entries(groupedPhotoConfigs).map(([date, configs]) => (
+                    <hgroup>
+                        <h2>{date}</h2>
+                        <div class="grid-fluid">
+                            {configs.map((config) => (
+                                <>
+                                    <Photo config={config} />
+                                    <Photo config={config} />
+                                    <Photo config={config} />
+                                    <Photo config={config} />
+                                    <Photo config={config} />
+                                    <Photo config={config} />
+                                </>
+                            ))}
+                        </div>
+                    </hgroup>
 
-
-                <div class="grid-fluid">
-                    {photoConfigs.map((config) => (
-                        <>
-                            <Photo config={config} />
-                        </>
-                    ))}
-                </div>
+                ))}
             </BaseHtml>
-        )
+        );
     })
     .listen(3000)
 

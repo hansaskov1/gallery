@@ -10,8 +10,6 @@
     max-width: 100%;
     border-radius: 8px 4px 8px 4px;
     cursor: pointer;
-    transition: filter 0.3s ease-in-out; /* Add transition for smooth dimming effect */
-    filter: brightness(100%); /* Set initial brightness to 100% */
   }
   
   .grid-fluid img:hover {
