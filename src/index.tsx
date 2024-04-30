@@ -93,10 +93,16 @@ export const Photo = ({ config }: { config: PhotoConfig }) => {
     );
 };
 
+const staticAssetsFolder = process.argv[2] || './public';
+
+console.log(staticAssetsFolder)
+
 new Elysia()
-    .use(staticPlugin())
+    .use(staticPlugin({
+        assets: "./public2"
+    }))
     .use(html())
-    .get('/favicon.ico', () => Bun.file('public/favicon.ico'))
+    .get('/favicon.ico', () => Bun.file(`${staticAssetsFolder}/favicon.ico`))
     .get('/', async () => {
         const photoConfigs = await readPhotosFromPublicDirectory();
         const groupedPhotoConfigs = groupPhotoConfigsByDate(photoConfigs);
@@ -124,4 +130,3 @@ new Elysia()
         );
     })
     .listen(3000)
-
